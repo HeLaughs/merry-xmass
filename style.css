@@ -320,9 +320,10 @@ form textarea:-ms-input-placeholder {
 	color:#fff;
 	font-size:20px;
 	padding:4px 25px 5px;
-	border-radius:5px;
+	
 	-moz-border-radius:5px;
 	-webkit-border-radius:5px;
+    border-radius:5px;
 	position: absolute;
 	bottom:5px;
 	width: 60%;
@@ -335,9 +336,10 @@ form textarea:-ms-input-placeholder {
 	margin-top:15px;
 	padding-top:10px;
 	line-height: 1;
-	border-radius:5px;
+	
 	-moz-border-radius:5px;
 	-webkit-border-radius:5px;
+    border-radius:5px;
 }
 #contact_modal .mail-container input{
 	font-family: 'Raleway', sans-serif;
