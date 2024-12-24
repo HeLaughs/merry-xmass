@@ -96,123 +96,62 @@
     elem.appendChild(canvas);
     })();
     
+    document.addEventListener("DOMContentLoaded", function () {
+        // Loader
+        const loader = document.getElementById("loader");
+        window.addEventListener("load", function () {
+            loader.style.display = "none";
+        });
     
+        // Parallax Effect
+        const scene = document.getElementById("christmas_scene");
+        const parallaxInstance = new Parallax(scene);
     
+        // Countdown Timer
+        const countdownContainer = document.getElementById("countdown_container");
+        const targetDate = new Date("Dec 25, 2023 00:00:00").getTime();
     
-    $(window).on('load', function(){
-        Main.init();
-        Main.setParallaxHeight(); 
-        $('#loader').fadeOut();
-    });
-    $(window).on('resize', function(){
-        Main.setParallaxHeight();
-        Main.setElementsHeight();
-    });
-    var Main = (function($){
-        return {
-            //inits
-            init: function(){
-                Main.events();
-                Main.setElementsHeight();
-                Main.setParallaxHeight();
-                Main.countdownInit();
-            },
-            //events
-            events: function(){
-                $(document).on('click','#submit_form_btn',function(e){
-                    e.preventDefault();
-                    var v			= true,
-                    firstName 	= $("#form_first_name").val()
-                    lastName 	= $("#form_last_name").val()
-                    email 		= $("#form_valid_email").val()
-                    message 	= $("#form_message").val();
-                    if(firstName == ''){
-                        v = false;
-                        $("#form_first_name").attr('style','border:1px solid #FF0000');
-                    }
-                    if(lastName == ''){
-                        v = false;
-                        $("#form_last_name").attr('style','border:1px solid #FF0000');
-                    }
-                    if(Main.isEmail(email) === false){
-                        v = false;
-                        $("#form_valid_email").attr('style','border:1px solid #FF0000');
-                    }
-                    if(message == ''){
-                        v = false;
-                        $("#form_message").attr('style','border:1px solid #FF0000');
-                    }
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
     
-                    if(v){
-                        Main.sendEmail(firstName, lastName, email, message);
-                    }
-                });
-            },
-            //functions
-            setParallaxHeight: function(){
-                var height = $(window).height();
-                $('#christmas_scene .layer-photo').css('height', height);
-            },
-            sendEmail:function(firstName, lastName, email, message){
-                $.ajax({
-                    url: 'sendmail.php',
-                    type: 'post',
-                    data: { "firstName": firstName, "lastName": lastName, "email": email, "message":message },
-                    success: function(response){
-                        $(".mail-container").addClass('hidden');
-                        $("#form_success_msg").parent().removeClass('hidden');
-                        $("#form_success_msg").html(response);
-                    },
-                    error: function( jqXhr, textStatus, errorThrown ){
-                        console.log( errorThrown );
-                    }
-                });
-            },
-            isEmail: function(email) {
-                var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-                return regex.test(email);
-            },
-            setElementsHeight: function(){
-                var height = $(window).height();
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
     
-                if( height <= 400){
-                    var width = $(window).height() / 2;
-                }else if( height <= 500 ){
-                    var width = $(window).height() / 3.5;
-                }else if( height <= 700 ){
-                    var width = $(window).height() / 3;
-                }else if( height <= 800 )
-                var width = $(window).height() / 2.8;
-                else{
-                    var width = $(window).height() / 2.5;
-                }
-                $('#christmas_tree').css({ 'width' : width,
-                    'margin-left' : -(width/2)
-                });
-                $('#mail_pole').css('margin-left', -(width/1.2));
-                $('#mail_pole img').css('width', width/3);
-            },
-            countdownInit: function(){
-                $('#countdown_container').countdown('2019/12/25', function(event) {
-                    $(this).html(event.strftime('<div class="col-md-3 col-xs-3 countdown-globe">%D<div class="col-md-12 padding-none">Days</div></div>\
-                        <div class="col-md-3 col-xs-3 countdown-globe">%H<div class="col-md-12 padding-none">Hours</div></div>\
-                        <div class="col-md-3 col-xs-3 countdown-globe">%M<div class="col-md-12 padding-none">Minutes</div></div>\
-                        <div class="col-md-3 col-xs-3 countdown-globe">%S<div class="col-md-12 padding-none">Seconds</div></div>'));
-                });
+            countdownContainer.innerHTML = `
+                <div class="countdown-globe">
+                    ${days}d ${hours}h ${minutes}m ${seconds}s
+                </div>
+            `;
+    
+            if (distance < 0) {
+                clearInterval(countdownInterval);
+                countdownContainer.innerHTML = "Merry Christmas!";
             }
         }
-    })($);
     
+        const countdownInterval = setInterval(updateCountdown, 1000);
     
+        // Form Submission
+        const form = document.querySelector("form");
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            const firstName = document.getElementById("form_first_name").value;
+            const lastName = document.getElementById("form_last_name").value;
+            const email = document.getElementById("form_valid_email").value;
+            const message = document.getElementById("form_message").value;
     
+            // Simulate form submission
+            setTimeout(function () {
+                document.getElementById("form_success_msg").innerText = `Thank you, ${firstName}! Your message has been sent.`;
+                form.reset();
+            }, 1000);
+        });
+    });
     
-    /**
-     * jQuery || Zepto Parallax Plugin
-     * @author Matthew Wagerfield - @wagerfield
-     * @description Creates a parallax effect between an array of layers,
-     *              driving the motion from the gyroscope output of a smartdevice.
-     *              If no gyroscope is available, the cursor position is used.
-     */
+   
      ;(function($, window, document, undefined) {
     
     // Strict Mode
@@ -678,7 +617,7 @@
     this.iy = (clientY - this.wcy) / this.wry;
     }
     };
-    
+
     Plugin.prototype.onScrollMove = function(event) {
     //topDistance = this.pageYOffset;
     // Cache mouse coordinates.
